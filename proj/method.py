@@ -1,20 +1,3 @@
-from flask import Flask, render_template, request,json
-
-from flaskext.mysql  import MySQL
-
-app = Flask(__name__)
-mysql = MySQL()
- 
-# MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'akash'
-app.config['MYSQL_DATABASE_DB'] = 'db'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-mysql.init_app(app)
-
-
-
-
 @app.route('/',methods=['GET','POST'])
 def signUp():
  
@@ -26,7 +9,8 @@ def signUp():
     	_email = request.form['eid']
     	_password = request.form['psd']
 
-    	cursor.callproc('User',(_name,_email,_password))
+    	cursor.execute('INSERT INTO Users VALUES(%s,%s,%s)',(_name,_email,_password,))
+    	
     	data = cursor.fetchall()
     	if len(data) is 0:
     		conn.commit()
