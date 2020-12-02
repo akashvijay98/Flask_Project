@@ -9,7 +9,7 @@ def signUp():
     	_email = request.form['eid']
     	_password = request.form['psd']
 
-    	cursor.execute('INSERT INTO Users VALUES(%s,%s,%s)',(_name,_email,_password,))
+    	cursor.execute('INSERT INTO Users VALUES(%s,%s,%s)',(_name,_email,_password,))  #can either use stored procedures or the cursor execute command.
     	
     	data = cursor.fetchall()
     	if len(data) is 0:
