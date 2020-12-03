@@ -13,7 +13,6 @@ mysql.init_app(app)
 
 @app.route('/',methods=['GET','POST'])
 def signUp():
-    msg=''
  
     # read the posted values from the UI
     if request.form:
@@ -27,7 +26,7 @@ def signUp():
         acc=cursor.fetchone()
 
         if acc:
-            msg="acc already exists"
+       	    return json.dumps({'message':'User already exists !'})
 
         else:
             cursor.execute('INSERT INTO Users VALUES(%s,%s,%s)',(_email,_name,_password,))  
