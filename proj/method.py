@@ -1,38 +1,65 @@
+
+from flask import Flask, render_template, request,json
+from flaskext.mysql import MySQL
+app = Flask(__name__) 
+mysql = MySQL()
+ 
+# MySQL configurations
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'akash'
+app.config['MYSQL_DATABASE_DB'] = 'db'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
+
 @app.route('/',methods=['GET','POST'])
 def signUp():
+    msg=''
  
     # read the posted values from the UI
     if request.form:
-    	conn = mysql.connect()
-    	cursor = conn.cursor()
-    	_name = request.form['ipname']
-    	_email = request.form['eid']
-    	_password = request.form['psd']
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        _name = request.form['ipname']
+        _email = request.form['eid']
+        _password = request.form['psd']
+        
+        cursor.execute('SELECT * FROM Users WHERE username = % s', (_name, )) 
+        acc=cursor.fetchone()
 
-    	cursor.execute('INSERT INTO Users VALUES(%s,%s,%s)',(_name,_email,_password,))  #can either use stored procedures or the cursor execute command.
-    	
-    	data = cursor.fetchall()
-    	if len(data) is 0:
-    		conn.commit()
-    		return json.dumps({'message':'User created successfully !'})
-    	else:
-    		return json.dumps({'error':str(data[0])})
+        if acc:
+            msg="acc already exists"
+
+        else:
+            cursor.execute('INSERT INTO Users VALUES(%s,%s,%s)',(_email,_name,_password,))  
+            data = cursor.fetchall()
+            if len(data) is 0:
+                conn.commit()
+                return json.dumps({'message':'User created successfully !'})
+            else:
+                return json.dumps({'error':str(data[0])})
 
 
 
-    	print(_name,_email)
+        print(_name,_email)
  
     # validate the received values
-    	if _name and _email and _password:
-        	return json.dumps({'html':'<span>All fields good  !!</span>'})
-    	else:
-        	return json.dumps({'html':'<span>Enter the required fields</span>'})
+        if _name and _email and _password:
+            return json.dumps({'html':'<span>All fields good  !!</span>'})
+        else:
+            return json.dumps({'html':'<span>Enter the required fields</span>'})
 
-    return render_template('signup.html')
-	
-	
+    return render_template('signup.html',msg=msg)
+    
+    
  
-	
+    
 
 
 app.run(host='0.0.0.0', port=8000,debug=True)
+	
+	
+ 
+	
+
+
+
